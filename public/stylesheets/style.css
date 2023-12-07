@@ -1,0 +1,129 @@
+.lightning-body {
+  margin: 0;
+  background-color: black;
+  background-image: url('https://www.noaa.gov/sites/default/files/styles/background_landing_page_focus_area/public/2021-02/weather1_0.jpg?h=e5bc07ba');
+  background-size: cover;
+  background-position-x: 50%;
+}
+
+.black-body {
+  margin: 0;
+  background-color: black;
+}
+
+/* .nav-bar{
+  border-bottom: 1px solid lightgrey;
+} */
+
+html, body{
+  height: 100%;
+}
+
+ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  /* background-color: black; */
+  display: flex;
+  justify-content: center; /* Center the list items horizontally */
+}
+
+.vertical-numbered-list {
+list-style-type: decimal; /* Use decimal for numbers */
+padding-left: 80px; /* Add some padding to ensure numbers are not too close to the text */
+color: black;
+font-weight: bold;
+}
+
+.vertical-numbered-list li {
+display: list-item; 
+color: black;
+font-weight: bold;
+}
+
+li a {
+  display: block;
+  color: white;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+
+li a:hover:not(.active) {
+  transform: scale(1.2);
+}
+
+.active-tab{
+  border-bottom: 2px solid white;
+}
+
+#python-in-middle {
+  margin: auto;
+  margin-top: 20%;
+  width: 10.5%;
+  top: 50%;
+  color: white;
+  font-size: 150%;
+}
+
+#team-name {
+  margin: auto;
+  margin-top: 2%;
+  width: 8.5%;
+  top: 50%;
+  color: white;
+  font-size: 50%;
+}
+
+.footer {
+  border-top: 1px solid lightgrey;
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  background-color: rgb(40, 40, 40);
+  color: white;
+  text-align: center;
+  font-size: 80%;
+}
+
+.footer-link, .text-link {
+  color: white;
+}
+
+#noa-image{
+  float: left;
+  margin: .5% .5% .5% .5%;
+}
+
+#rtr-image{
+  float: right;
+  margin: .5% .5% .5% .5%;
+}
+
+.tut-images{
+  margin: 1% 1% 1% 1%;
+}
+
+pre, p {
+  color: white;
+}
+
+.text{
+  margin: 5% 5% 5% 5%;
+}
+
+.footer-clear-element { clear: both; height: 60px; }
+
+
+td, th {
+  border: 1px solid #777;
+  padding: 0.5rem;
+  text-align: center;
+}
+
+table {
+  border-collapse: collapse;
+  margin-left: 40%;
+}

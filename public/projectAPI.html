@@ -1,0 +1,255 @@
+<html>
+<head>
+  <title>FlyingCircus</title>
+  <link rel="stylesheet" href="/stylesheets/style.css">
+  <style>
+      body {
+        background: url('images/Bogus.JPG') no-repeat center center fixed;
+        background-size: cover;
+        margin: 0;
+        padding: 0;
+        height: 100vh;
+        font-family: sans-serif;
+    }
+      .nav-bar, #weatherData {
+
+      background-color: rgba(0, 0, 0, 0.75);
+      color: black;
+      padding: 10px;
+  }
+
+    .table-container {
+        background-color: rgba(0, 0, 0, 1);
+        padding: 20px;
+        margin-left: 60px;
+        margin-right: auto;
+    }
+      #outputTable td, #outputTable td {
+      background-color: #000000;
+      font-weight: bold;
+      color: #ADD8E6;
+
+  }
+    #weatherData {
+        color: white;
+    }
+  </style>
+</head>
+
+<body class="black-body">
+  <!-- Navigation bar content -->
+  <div class="nav-bar">
+    <ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a class="active-tab" href="projectAPI.html">Our Project</a></li>
+      <li><a href="history.html">History</a></li>
+      <li><a href="comparison.html">Get Started with Python</a></li>
+      <li><a href="about.html">About</a></li>
+    </ul>
+    </div> 
+
+  <!-- Create button to generate weather forecast and dropdown box -->
+  <div id="weatherData">
+    <!-- Instructions-->
+    <div style="padding: 20px; width: auto; margin-left: 0; text-align: left;font-size: 0.9em;">
+      <h3>Instructions for Running the Trail Model:</h3>
+      <ol>
+        <li><strong>Get Weather Forecast</strong>: Click on the 'Get Weather Forecast' button.</li>
+        <li><strong>Select Date</strong>: Choose a date from the dropdown box.</li>
+        <li><strong>Run the Model</strong>: Click on the 'Run Model' button.</li>
+        <li><strong>View Results</strong>: Open trails will be displayed in the table below.</li>
+      </ol>
+    </div>
+    <!-- Buttons -->
+    <button id="fetchWeatherButton">Get Weather Forecast</button> <!-- Get forecast button -->
+    <select id="dateDropdown"></select> <!-- Date dropdown box -->
+    <button id="runModelButton">Run Model</button> <!-- Run model button -->
+  
+    <!-- Div for displaying the weather data -->
+    <div id="forecastDisplay" style="padding: 40px;font-size:  0.9em;"></div>
+    <!-- Weather data and results will be displayed here -->
+  </div>
+
+  <div class="table-container" style="
+    background: url('images/Bogus.JPG') no-repeat center center fixed;
+    background-size: cover;
+    opacity: 0.8;
+    position: relative;
+    z-index: 1;
+">
+    <table id="outputTable" style="
+    border-collapse: collapse;
+    margin-top: 20px;
+    color: white;
+    width: 80%; /* Reduce the width of the table */
+    margin-left: 60px; /* Align the table to the left within its container */
+    margin-right: auto; /* Keep the right margin flexible */
+    table-layout: fixed;
+
+  ">
+          <thead>
+          <tr>
+            <th style="background-color: rgba(0, 0, 0, 0.7); padding: 8px; border: 1px solid white;">Avoid</th>
+            <th style="background-color: rgba(0, 0, 0, 0.7); padding: 8px; border: 1px solid white;">Alternatives</th>
+            <th style="background-color: rgba(0, 0, 0, 0.7); padding: 8px; border: 1px solid white;">All Weather</th>
+            <th style="background-color: rgba(0, 0, 0, 0.7); padding: 8px; border: 1px solid white;">Good Bets</th>
+          </tr>
+          </thead>
+          <tbody id="outputTableBody" style="background-color: rgba(255, 255, 255, 0.2);">
+          <!-- Table rows will be dynamically added here -->
+          </tbody>
+        </table>
+      </div>
+
+
+  <script>
+    let weatherData; // Variable to store the fetched weather data
+    let formattedDataForModel = {}; // Variable to store the formatted data for the model
+
+    // Create a data container object with four categories
+    const trailData = {
+      avoid: ['Sweet Connie Trail #77', 'Cottonwood Creek Trail #27', 'Old Pen Trail #15A', 'Table Rock Trail #15', 'Polecat Loop #81', 'Big Springs Loop #113', 'Ridgecrest #20', 'Bucktail Trail #20A', 'Central Ridge Spur #22A (north)', 'Central Ridge Spur #22A (south)', 'Red Cliffs #39'],
+      alternatives: ['Rocky Canyon Road', 'Mountain Cove Road', 'Upper 8th Street Road', 'The Boise Greenbelt', 'Boise City Parks', 'Wilson Creek Trails'],
+      all_weather: ['Shoshone-Bannock Tribes Trail #19A', 'Rim Trail', 'Harrison Hollow Trail #57', 'Oregon Trail', 'Upper Portion of Basalt Trail', 'Red Fox Trail #36', 'Gold Finch #35', 'Owls Roost #37', 'Hulls Pond Loop #34', 'The Grove #38', 'Red-Winged Blackbird #35A', 'Mountain Cove #22C', 'Eagle Ridge Loop #25A'],
+      good_bets: ['Dry Creek Trail #78', 'Lower Hulls Gulch Trail #29', 'Camels Back Trails #40', 'Toll Road #27A', 'Freestone Ridge #5'],
+    };
+
+
+    // Create click event listener to generate the weather forecast data
+    document.getElementById('fetchWeatherButton').addEventListener('click', function() {
+      fetch('/weather/run-forecast-script') // Get weather forecast in JSON format
+        .then(response => response.json())
+        .then(data => {
+          weatherData = data; // Store the fetched data
+  
+          // Populate dropdown
+          const dropdown = document.getElementById('dateDropdown');
+          dropdown.innerHTML = ''; // Clear any existing data in the dropdown 
+          Object.keys(weatherData).forEach(date => { // Get each date (option)
+            const option = document.createElement('option');
+            option.value = date;
+            option.textContent = date;
+            dropdown.appendChild(option); // Append the dates for the dropdown box
+          });
+  
+          // Display data for the first date
+          displayWeatherData(Object.keys(weatherData)[0]);
+        })
+        .catch(error => console.error('Error:', error));
+    });
+  
+    // Function to display the weather forecast data for the selected date
+    function displayWeatherData(date) { 
+      const weatherInfo = weatherData[date];
+      const forecastDiv = document.getElementById('forecastDisplay');
+      forecastDiv.innerHTML = 'Max Temp: ' + weatherInfo.max_temp + ' °F<br>' + 
+        'Min Temp: ' + weatherInfo.min_temp + ' °F<br>' + 
+        'Precipitation: ' + weatherInfo.precipitation + ' mm';
+
+      // Format and store data for the model
+      formattedDataForModel = {
+        'Date': date,
+        'Max Temperature (F)': weatherInfo.max_temp,
+        'Min Temperature (F)': weatherInfo.min_temp,
+        'Precipitation (mm)': weatherInfo.precipitation
+      };      
+    }
+  
+    // Update the displayed forecast data when a new date is selected from the dropdown
+    document.getElementById('dateDropdown').addEventListener('change', function() {
+      displayWeatherData(this.value);
+    });
+
+  // Create click event listener for the "Run Model" button
+  document.getElementById('runModelButton').addEventListener('click', function() {
+    sendDataToModel(); // Send data to the model when the button is clicked
+  });
+
+  // When 'Run Model' button is clicked, send forecast data to ModelAPI.py
+  // Inside sendDataToModel() function
+// Inside sendDataToModel() function
+function sendDataToModel() {
+  fetch('http://127.0.0.1:5000/predict', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(formattedDataForModel)
+  })
+    .then(response => response.json())
+    .then(data => {
+      console.log(data);
+      const prediction = data.prediction; // Replace this with the actual prediction array
+
+      const outputTableBody = document.getElementById('outputTableBody');
+      outputTableBody.innerHTML = ''; // Clear only the tbody
+
+      const categoryNames = Object.keys(trailData);
+
+      // Create an object to store trails in each category
+      const trailsByCategory = {
+        avoid: [],
+        alternatives: [],
+        all_weather: [],
+        good_bets: [],
+      };
+
+      // Organize trails into their respective categories
+      for (let i = 0; i < prediction.length; i++) {
+        if (prediction[i] === 0) {
+          const categoryName = categoryNames[i];
+          const trails = trailData[categoryName];
+          trailsByCategory[categoryName] = trailsByCategory[categoryName].concat(trails);
+        }
+      }
+
+      // Determine the maximum number of trails among all categories
+      const maxTrailCount = Math.max(
+        trailsByCategory.avoid.length,
+        trailsByCategory.alternatives.length,
+        trailsByCategory.all_weather.length,
+        trailsByCategory.good_bets.length
+      );
+
+      // Create a row for each trail, with trails listed in the correct columns
+      for (let i = 0; i < maxTrailCount; i++) {
+        const row = document.createElement('tr');
+
+        // Create cells for each category
+        categoryNames.forEach(category => {
+          const cell = document.createElement('td');
+          const trails = trailsByCategory[category];
+          if (i < trails.length) {
+            cell.textContent = trails[i];
+          }
+          row.appendChild(cell);
+        });
+
+        outputTableBody.appendChild(row);
+      }
+    })
+    .catch(error => console.error('Error: ', error));
+}
+  </script>
+
+  <div style="background-color: rgba(0, 0, 0, 0.7); padding: 20px; color: white;font-size: 0.9em;">
+    <h3>Please help us preserve the integrity of our trail system by doing the following:</h3>
+    <ol>
+      <li>Stay off of muddy trails. Pay attention - if you are leaving tracks, turn back.</li>
+      <li>In winter, ride or hike early in the morning when trails are frozen hard.</li>
+      <li>Check daily trail conditions on our website or on Facebook to know whether you should be on the trails during winter months.</li>
+      <li>If you encounter short stretches of mud, ride or walk through them. Don’t leave the trail as this kills trailside vegetation and leads to trail widening.</li>
+    </ol>
+    <h3 style="color: white;">For more details and trail usage guidelines, visit <a href="https://www.ridgetorivers.org/etiquette/wet-weather-and-winter-trail-use/" target="_blank" style="color:blue">Ridge to Rivers</a>.</h3>
+  </div>
+
+<div class="footer-clear-element"></div>
+<div class="footer">
+    <img id="noa-image" src="https://www.noaa.gov/themes/custom/noaa/images/noaa_digital_logo.svg" alt="noa-image" width="3.5%" height="3.5%">
+    <img id="rtr-image" src="https://www.ridgetorivers.org/Content/images/Ridge-to-Rivers-Logo.png?height=75 " alt="rtr-image" width="3.5%" height="3.5%">
+    <p><a class="footer-link "href="https://www.noaa.gov/weather">National Oceanic and Atmospheric Administration (NOAA)</a> | <a class="footer-link" href="https://www.ridgetorivers.org">Ridge to Rivers</a></p>
+    <p>&copy Creators: Chiara Altobelli, David Arteaga, Aaron Goin, Drew Rizk | Boise State University</p>
+  </div>
+
+</body>
+</html>
